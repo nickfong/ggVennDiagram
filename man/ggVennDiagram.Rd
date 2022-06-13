@@ -19,6 +19,7 @@ ggVennDiagram(
   label_txtWidth = 40,
   edge_lty = "solid",
   edge_size = 1,
+  percent_denominator = NA,
   ...
 )
 }

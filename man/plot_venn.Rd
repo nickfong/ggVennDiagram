@@ -18,6 +18,7 @@ plot_venn(
   label_txtWidth,
   edge_lty,
   edge_size,
+  percent_denominator,
   ...
 )
 }

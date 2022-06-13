@@ -74,6 +74,7 @@ ggVennDiagram <- function(x, category.names=names(x),
                           label_txtWidth = 40,
                           edge_lty = "solid",
                           edge_size = 1,
+                          percent_denominator = NA,
                           ...){
 
   if (!is.list(x)){
@@ -97,6 +98,7 @@ ggVennDiagram <- function(x, category.names=names(x),
               label_txtWidth = label_txtWidth,
               edge_lty = edge_lty,
               edge_size = edge_size,
+              percent_denominator = percent_denominator,
               ...)
   }
   else{
@@ -128,6 +130,7 @@ plot_venn <- function(x,
                       label_txtWidth,
                       edge_lty,
                       edge_size,
+                      percent_denominator,
                       ...){
   venn <- Venn(x)
   data <- process_data(venn)
@@ -141,11 +144,20 @@ plot_venn <- function(x,
     theme_void()
 
   if (label != "none" & show_intersect == FALSE){
-    region_label <- data@region %>%
-      dplyr::filter(.data$component == "region") %>%
-      dplyr::mutate(percent = paste(round(.data$count*100/sum(.data$count),
-                                          digits = label_percent_digit),"%", sep="")) %>%
-      dplyr::mutate(both = paste(.data$count,paste0("(",.data$percent,")"),sep = "\n"))
+    if (!is.na(percent_denominator)) {
+      region_label <- data@region %>%
+        dplyr::filter(.data$component == "region") %>%
+        dplyr::mutate(percent = paste(round(.data$count*100/percent_denominator,
+                                            digits = label_percent_digit),"%", sep="")) %>%
+        dplyr::mutate(both = paste(.data$count,paste0("(",.data$percent,")"),sep = "\n"))
+    }
+    else {
+      region_label <- data@region %>%
+        dplyr::filter(.data$component == "region") %>%
+        dplyr::mutate(percent = paste(round(.data$count*100/sum(.data$count),
+                                            digits = label_percent_digit),"%", sep="")) %>%
+        dplyr::mutate(both = paste(.data$count,paste0("(",.data$percent,")"),sep = "\n"))
+    }
     if (label_geom == "label"){
       p <- p + geom_sf_label(aes_string(label=label),
                              data = region_label,
